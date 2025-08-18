@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     ]
     user_type = models.CharField(max_length=20, choices=USER_TYPES)
     department = models.CharField(max_length=100, blank=True)
-    eth_address = models.CharField(max_length=42, blank=True)  # For blockchain
+    wallet_address = models.CharField(max_length=42, blank=True)  # Ethereum address field
 
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
