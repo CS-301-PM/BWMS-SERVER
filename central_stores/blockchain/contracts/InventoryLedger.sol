@@ -1,40 +1,48 @@
-pragma solidity ^0.8.19;
+// blockchain/contracts/InventoryLedger.sol
+pragma solidity ^0.8.28;
 
 contract InventoryLedger {
-    event RequestApproved(
-        uint indexed requestId,
-        address indexed requester,
-        string itemId,
-        uint quantity
-    );
-
-    event StockUpdated(
-        string indexed itemId,
-        uint newQuantity,
-        string actionType  // "ADD", "REMOVE", "UPDATE"
-    );
-
+    enum ActionType { 
+        REQUEST, 
+        APPROVAL, 
+        REJECTION, 
+        STOCK_UPDATE,
+        STOCK_MOVEMENT,
+        DAMAGE_REPORT,
+        DELIVERY_RECORD
+        }
+    
+    struct LogEntry {
+        address user;
+        uint256 itemId;
+        uint256 quantity;
+        ActionType action;
+        uint256 timestamp;
+    }
+    
+    LogEntry[] public logs;
     address public admin;
 
     constructor() {
         admin = msg.sender;
     }
 
-    function logRequestApproval(
-        uint requestId,
-        string memory itemId,
-        uint quantity
+    function logAction(
+        uint256 itemId,
+        uint256 quantity,
+        ActionType action
     ) external {
-        require(msg.sender == admin, "Only admin");
-        emit RequestApproved(requestId, tx.origin, itemId, quantity);
+        require(msg.sender == admin, "Only admin can log");
+        logs.push(LogEntry(
+            msg.sender,
+            itemId,
+            quantity,
+            action,
+            block.timestamp
+        ));
     }
 
-    function logStockUpdate(
-        string memory itemId,
-        uint newQuantity,
-        string memory actionType
-    ) external {
-        require(msg.sender == admin, "Only admin");
-        emit StockUpdated(itemId, newQuantity, actionType);
+    function getLogCount() external view returns (uint256) {
+        return logs.length;
     }
 }
