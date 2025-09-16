@@ -2,7 +2,6 @@ import os
 import json
 import logging
 from web3 import Web3
-from web3.middleware import geth_poa_middleware
 from dotenv import load_dotenv
 from eth_account import Account
 from hexbytes import HexBytes
@@ -49,9 +48,8 @@ class Web3Client:
             # Initialize Web3
             self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
             
-            # Add POA middleware if needed (e.g., for Ganache, BSC testnet)
-            self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-            
+      
+             # Check connection
             if not self.w3.is_connected():
                 raise ConnectionError(f"Failed to connect to Web3 provider at {self.rpc_url}")
 
